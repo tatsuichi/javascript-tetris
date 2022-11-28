@@ -1,0 +1,944 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+  <meta charset="UTF-8">
+  <title>JavaScriptで作成した自作テトリス</title>
+  <style>
+    .next_area {
+      width: 20px;
+      height: 20px;
+      background-color: white;
+    }
+
+    .frame {
+      width: 20px;
+      height: 20px;
+      background-color: darkgray;
+    }
+
+    .field {
+      width: 20px;
+      height: 20px;
+      background-color: black;
+    }
+  </style>
+</head>
+
+<body>
+  <p>
+  <table width="650">
+    <tbody>
+      <tr>
+        <td>←キー:左に1マス移動する</td>
+        <td>→キー:右に1マス移動する</td>
+        <td>↓キー:下に1マス移動する</td>
+      </tr>
+    </tbody>
+  </table>
+  <table width="380">
+    <tbody>
+      <tr>
+        <td>A(a)キー:左回転する</td>
+        <td>S(s)キー:右回転する</td>
+      </tr>
+    </tbody>
+  </table>
+  </p>
+  <p>
+  <div>点数：</div>
+  <div id="score">0</div>
+  </p>
+  <table id="next_tetrimino">
+    <tbody>
+      <tr>
+        <td class="next_area"></td>
+        <td class="next_area"></td>
+        <td class="next_area"></td>
+        <td class="next_area" id="next_grid1-3"></td>
+        <td class="next_area" id="next_grid1-4"></td>
+        <td class="next_area" id="next_grid1-5"></td>
+        <td class="next_area" id="next_grid1-6"></td>
+        <td class="next_area" id="next_grid1-7"></td>
+        <td class="next_area" id="next_grid1-8"></td>
+        <td class="next_area"></td>
+        <td class="next_area"></td>
+        <td class="next_area"></td>
+      </tr>
+      <tr>
+        <td class="next_area"></td>
+        <td class="next_area"></td>
+        <td class="next_area"></td>
+        <td class="next_area" id="next_grid2-3"></td>
+        <td class="next_area" id="next_grid2-4"></td>
+        <td class="next_area" id="next_grid2-5"></td>
+        <td class="next_area" id="next_grid2-6"></td>
+        <td class="next_area" id="next_grid2-7"></td>
+        <td class="next_area" id="next_grid2-8"></td>
+        <td class="next_area"></td>
+        <td class="next_area"></td>
+        <td class="next_area"></td>
+      </tr>
+    </tbody>
+  </table>
+  <table id="game_board" border="1" style="border-collapse:collapse">
+    <tbody>
+      <tr>
+        <td class="frame"></td>
+        <td class="frame"></td>
+        <td class="frame"></td>
+        <td class="field" id="grid0-3"></td>
+        <td class="field" id="grid0-4"></td>
+        <td class="field" id="grid0-5"></td>
+        <td class="field" id="grid0-6"></td>
+        <td class="field" id="grid0-7"></td>
+        <td class="field" id="grid0-8"></td>
+        <td class="frame"></td>
+        <td class="frame"></td>
+        <td class="frame"></td>
+      </tr>
+      <tr>
+        <td class="frame"></td>
+        <td class="field" id="grid1-1"></td>
+        <td class="field" id="grid1-2"></td>
+        <td class="field" id="grid1-3"></td>
+        <td class="field" id="grid1-4"></td>
+        <td class="field" id="grid1-5"></td>
+        <td class="field" id="grid1-6"></td>
+        <td class="field" id="grid1-7"></td>
+        <td class="field" id="grid1-8"></td>
+        <td class="field" id="grid1-9"></td>
+        <td class="field" id="grid1-10"></td>
+        <td class="frame"></td>
+      </tr>
+      <tr>
+        <td class="frame"></td>
+        <td class="field" id="grid2-1"></td>
+        <td class="field" id="grid2-2"></td>
+        <td class="field" id="grid2-3"></td>
+        <td class="field" id="grid2-4"></td>
+        <td class="field" id="grid2-5"></td>
+        <td class="field" id="grid2-6"></td>
+        <td class="field" id="grid2-7"></td>
+        <td class="field" id="grid2-8"></td>
+        <td class="field" id="grid2-9"></td>
+        <td class="field" id="grid2-10"></td>
+        <td class="frame"></td>
+      </tr>
+      <tr>
+        <td class="frame"></td>
+        <td class="field" id="grid3-1"></td>
+        <td class="field" id="grid3-2"></td>
+        <td class="field" id="grid3-3"></td>
+        <td class="field" id="grid3-4"></td>
+        <td class="field" id="grid3-5"></td>
+        <td class="field" id="grid3-6"></td>
+        <td class="field" id="grid3-7"></td>
+        <td class="field" id="grid3-8"></td>
+        <td class="field" id="grid3-9"></td>
+        <td class="field" id="grid3-10"></td>
+        <td class="frame"></td>
+      </tr>
+      <tr>
+        <td class="frame"></td>
+        <td class="field" id="grid4-1"></td>
+        <td class="field" id="grid4-2"></td>
+        <td class="field" id="grid4-3"></td>
+        <td class="field" id="grid4-4"></td>
+        <td class="field" id="grid4-5"></td>
+        <td class="field" id="grid4-6"></td>
+        <td class="field" id="grid4-7"></td>
+        <td class="field" id="grid4-8"></td>
+        <td class="field" id="grid4-9"></td>
+        <td class="field" id="grid4-10"></td>
+        <td class="frame"></td>
+      </tr>
+      <tr>
+        <td class="frame"></td>
+        <td class="field" id="grid5-1"></td>
+        <td class="field" id="grid5-2"></td>
+        <td class="field" id="grid5-3"></td>
+        <td class="field" id="grid5-4"></td>
+        <td class="field" id="grid5-5"></td>
+        <td class="field" id="grid5-6"></td>
+        <td class="field" id="grid5-7"></td>
+        <td class="field" id="grid5-8"></td>
+        <td class="field" id="grid5-9"></td>
+        <td class="field" id="grid5-10"></td>
+        <td class="frame"></td>
+      </tr>
+      <tr>
+        <td class="frame"></td>
+        <td class="field" id="grid6-1"></td>
+        <td class="field" id="grid6-2"></td>
+        <td class="field" id="grid6-3"></td>
+        <td class="field" id="grid6-4"></td>
+        <td class="field" id="grid6-5"></td>
+        <td class="field" id="grid6-6"></td>
+        <td class="field" id="grid6-7"></td>
+        <td class="field" id="grid6-8"></td>
+        <td class="field" id="grid6-9"></td>
+        <td class="field" id="grid6-10"></td>
+        <td class="frame"></td>
+      </tr>
+      <tr>
+        <td class="frame"></td>
+        <td class="field" id="grid7-1"></td>
+        <td class="field" id="grid7-2"></td>
+        <td class="field" id="grid7-3"></td>
+        <td class="field" id="grid7-4"></td>
+        <td class="field" id="grid7-5"></td>
+        <td class="field" id="grid7-6"></td>
+        <td class="field" id="grid7-7"></td>
+        <td class="field" id="grid7-8"></td>
+        <td class="field" id="grid7-9"></td>
+        <td class="field" id="grid7-10"></td>
+        <td class="frame"></td>
+      </tr>
+      <tr>
+        <td class="frame"></td>
+        <td class="field" id="grid8-1"></td>
+        <td class="field" id="grid8-2"></td>
+        <td class="field" id="grid8-3"></td>
+        <td class="field" id="grid8-4"></td>
+        <td class="field" id="grid8-5"></td>
+        <td class="field" id="grid8-6"></td>
+        <td class="field" id="grid8-7"></td>
+        <td class="field" id="grid8-8"></td>
+        <td class="field" id="grid8-9"></td>
+        <td class="field" id="grid8-10"></td>
+        <td class="frame"></td>
+      </tr>
+      <tr>
+        <td class="frame"></td>
+        <td class="field" id="grid9-1"></td>
+        <td class="field" id="grid9-2"></td>
+        <td class="field" id="grid9-3"></td>
+        <td class="field" id="grid9-4"></td>
+        <td class="field" id="grid9-5"></td>
+        <td class="field" id="grid9-6"></td>
+        <td class="field" id="grid9-7"></td>
+        <td class="field" id="grid9-8"></td>
+        <td class="field" id="grid9-9"></td>
+        <td class="field" id="grid9-10"></td>
+        <td class="frame"></td>
+      </tr>
+      <tr>
+        <td class="frame"></td>
+        <td class="field" id="grid10-1"></td>
+        <td class="field" id="grid10-2"></td>
+        <td class="field" id="grid10-3"></td>
+        <td class="field" id="grid10-4"></td>
+        <td class="field" id="grid10-5"></td>
+        <td class="field" id="grid10-6"></td>
+        <td class="field" id="grid10-7"></td>
+        <td class="field" id="grid10-8"></td>
+        <td class="field" id="grid10-9"></td>
+        <td class="field" id="grid10-10"></td>
+        <td class="frame"></td>
+      </tr>
+      <tr>
+        <td class="frame"></td>
+        <td class="field" id="grid11-1"></td>
+        <td class="field" id="grid11-2"></td>
+        <td class="field" id="grid11-3"></td>
+        <td class="field" id="grid11-4"></td>
+        <td class="field" id="grid11-5"></td>
+        <td class="field" id="grid11-6"></td>
+        <td class="field" id="grid11-7"></td>
+        <td class="field" id="grid11-8"></td>
+        <td class="field" id="grid11-9"></td>
+        <td class="field" id="grid11-10"></td>
+        <td class="frame"></td>
+      </tr>
+      <tr>
+        <td class="frame"></td>
+        <td class="field" id="grid12-1"></td>
+        <td class="field" id="grid12-2"></td>
+        <td class="field" id="grid12-3"></td>
+        <td class="field" id="grid12-4"></td>
+        <td class="field" id="grid12-5"></td>
+        <td class="field" id="grid12-6"></td>
+        <td class="field" id="grid12-7"></td>
+        <td class="field" id="grid12-8"></td>
+        <td class="field" id="grid12-9"></td>
+        <td class="field" id="grid12-10"></td>
+        <td class="frame"></td>
+      </tr>
+      <tr>
+        <td class="frame"></td>
+        <td class="field" id="grid13-1"></td>
+        <td class="field" id="grid13-2"></td>
+        <td class="field" id="grid13-3"></td>
+        <td class="field" id="grid13-4"></td>
+        <td class="field" id="grid13-5"></td>
+        <td class="field" id="grid13-6"></td>
+        <td class="field" id="grid13-7"></td>
+        <td class="field" id="grid13-8"></td>
+        <td class="field" id="grid13-9"></td>
+        <td class="field" id="grid13-10"></td>
+        <td class="frame"></td>
+      </tr>
+      <tr>
+        <td class="frame"></td>
+        <td class="field" id="grid14-1"></td>
+        <td class="field" id="grid14-2"></td>
+        <td class="field" id="grid14-3"></td>
+        <td class="field" id="grid14-4"></td>
+        <td class="field" id="grid14-5"></td>
+        <td class="field" id="grid14-6"></td>
+        <td class="field" id="grid14-7"></td>
+        <td class="field" id="grid14-8"></td>
+        <td class="field" id="grid14-9"></td>
+        <td class="field" id="grid14-10"></td>
+        <td class="frame"></td>
+      </tr>
+      <tr>
+        <td class="frame"></td>
+        <td class="field" id="grid15-1"></td>
+        <td class="field" id="grid15-2"></td>
+        <td class="field" id="grid15-3"></td>
+        <td class="field" id="grid15-4"></td>
+        <td class="field" id="grid15-5"></td>
+        <td class="field" id="grid15-6"></td>
+        <td class="field" id="grid15-7"></td>
+        <td class="field" id="grid15-8"></td>
+        <td class="field" id="grid15-9"></td>
+        <td class="field" id="grid15-10"></td>
+        <td class="frame"></td>
+      </tr>
+      <tr>
+        <td class="frame"></td>
+        <td class="field" id="grid16-1"></td>
+        <td class="field" id="grid16-2"></td>
+        <td class="field" id="grid16-3"></td>
+        <td class="field" id="grid16-4"></td>
+        <td class="field" id="grid16-5"></td>
+        <td class="field" id="grid16-6"></td>
+        <td class="field" id="grid16-7"></td>
+        <td class="field" id="grid16-8"></td>
+        <td class="field" id="grid16-9"></td>
+        <td class="field" id="grid16-10"></td>
+        <td class="frame"></td>
+      </tr>
+      <tr>
+        <td class="frame"></td>
+        <td class="field" id="grid17-1"></td>
+        <td class="field" id="grid17-2"></td>
+        <td class="field" id="grid17-3"></td>
+        <td class="field" id="grid17-4"></td>
+        <td class="field" id="grid17-5"></td>
+        <td class="field" id="grid17-6"></td>
+        <td class="field" id="grid17-7"></td>
+        <td class="field" id="grid17-8"></td>
+        <td class="field" id="grid17-9"></td>
+        <td class="field" id="grid17-10"></td>
+        <td class="frame"></td>
+      </tr>
+      <tr>
+        <td class="frame"></td>
+        <td class="field" id="grid18-1"></td>
+        <td class="field" id="grid18-2"></td>
+        <td class="field" id="grid18-3"></td>
+        <td class="field" id="grid18-4"></td>
+        <td class="field" id="grid18-5"></td>
+        <td class="field" id="grid18-6"></td>
+        <td class="field" id="grid18-7"></td>
+        <td class="field" id="grid18-8"></td>
+        <td class="field" id="grid18-9"></td>
+        <td class="field" id="grid18-10"></td>
+        <td class="frame"></td>
+      </tr>
+      <tr>
+        <td class="frame"></td>
+        <td class="field" id="grid19-1"></td>
+        <td class="field" id="grid19-2"></td>
+        <td class="field" id="grid19-3"></td>
+        <td class="field" id="grid19-4"></td>
+        <td class="field" id="grid19-5"></td>
+        <td class="field" id="grid19-6"></td>
+        <td class="field" id="grid19-7"></td>
+        <td class="field" id="grid19-8"></td>
+        <td class="field" id="grid19-9"></td>
+        <td class="field" id="grid19-10"></td>
+        <td class="frame"></td>
+      </tr>
+      <tr>
+        <td class="frame"></td>
+        <td class="field" id="grid20-1"></td>
+        <td class="field" id="grid20-2"></td>
+        <td class="field" id="grid20-3"></td>
+        <td class="field" id="grid20-4"></td>
+        <td class="field" id="grid20-5"></td>
+        <td class="field" id="grid20-6"></td>
+        <td class="field" id="grid20-7"></td>
+        <td class="field" id="grid20-8"></td>
+        <td class="field" id="grid20-9"></td>
+        <td class="field" id="grid20-10"></td>
+        <td class="frame"></td>
+      </tr>
+      <tr>
+        <td class="frame"></td>
+        <td class="frame"></td>
+        <td class="frame"></td>
+        <td class="frame"></td>
+        <td class="frame"></td>
+        <td class="frame"></td>
+        <td class="frame"></td>
+        <td class="frame"></td>
+        <td class="frame"></td>
+        <td class="frame"></td>
+        <td class="frame"></td>
+        <td class="frame"></td>
+      </tr>
+    </tbody>
+  </table>
+</body>
+<script>
+  // 縦20行 x 横10列(左上を1-1座標とし、右下を20-10座標とする)
+  const MAX_LINE = 20;
+  const MAX_COLUMN = 10;
+  // テトリミノの種類
+  const TETRIMINO_KIND = 7;
+  // 次のテトリミノがあるエリアの背景色
+  const NEXT_AREA_BACKGROUND_COLOR = "white";
+  // テトリミノの色
+  const NONE_COLOR = "black";
+  const I_TETRIMINO_COLOR = "deepskyblue";
+  const O_TETRIMINO_COLOR = "yellow";
+  const S_TETRIMINO_COLOR = "palegreen";
+  const Z_TETRIMINO_COLOR = "tomato";
+  const L_TETRIMINO_COLOR = "royalblue";
+  const J_TETRIMINO_COLOR = "orange";
+  const T_TETRIMINO_COLOR = "blueviolet";
+  // 次のテトリミノ
+  let next_tetrimino_positions = [];
+  let next_tetrimino_color;
+  // 現在操作中のテトリミノ
+  let active_tetrimino_positions = [];
+  let active_tetrimino_color;
+  let active_tetrimino_rotation_no; // 回転向き：右回転であれば回転する毎に0(初期)->1->2->3->0となる
+  // 落ち切ったテトリミノ
+  let passive_tetrimino_positions = [];
+  // メインタイマ
+  let main_timer;
+  // 落ちる速さ
+  let timer_msec = 500;
+  // スコア
+  let score = 0;
+
+  // 初回のテトリミノを落とす
+  createTetrimino(); // 今回用
+  setTetrimino();
+  createTetrimino(); // 次回用
+
+  // テトリス開始
+  startGame();
+
+  // テトリス開始
+  function startGame() {
+    // メインループ
+    main_timer = setInterval(function () {
+      // ユーザーのキー操作を受け付ける
+      document.addEventListener('keydown', userKey, false);
+      // テトリミノを１マス下に移動する
+      canDown = moveTetrimino('down');
+      // テトリミノが落ちきったら、
+      if (!canDown) {
+        // テトリミノの位置を覚えておく
+        passive_tetrimino_positions = [...passive_tetrimino_positions, ...active_tetrimino_positions];
+        // １行揃っていれば削除＆シフトする
+        const complete_line = checkTetris();
+        if (complete_line > 0) {
+          // スコアを加算する
+          addSocre(complete_line);
+        }
+        // ゲームクリア判定
+        if (isGameClear()) {
+          termGame();
+          alert('ゲームクリア');
+        } else {
+          setSpeed();
+          // ゲームオーバー判定
+          if (isGameOver()) {
+            termGame();
+            alert('ゲームオーバー');
+          } else {
+            // 次のテトリミノを落とす
+            setTetrimino();
+            createTetrimino();
+          }
+        }
+      }
+    }, timer_msec);
+  }
+
+  // テトリス終了
+  function termGame() {
+    clearTimeout(main_timer);
+  }
+
+  // 新たにテトリミノを作る
+  function createTetrimino() {
+    const kindNo = getRandomInt(TETRIMINO_KIND);
+    switch (kindNo) {
+      case 0:
+        // □□□□
+        next_tetrimino_positions = ['1-4', '1-5', '1-6', '1-7'];
+        next_tetrimino_color = I_TETRIMINO_COLOR;
+        break;
+      case 1:
+        //  □□
+        //  □□
+        next_tetrimino_positions = ['1-5', '1-6', '2-5', '2-6'];
+        next_tetrimino_color = O_TETRIMINO_COLOR;
+        break;
+      case 2:
+        //  □□
+        // □□
+        next_tetrimino_positions = ['1-5', '1-6', '2-4', '2-5'];
+        next_tetrimino_color = S_TETRIMINO_COLOR;
+        break;
+      case 3:
+        // □□
+        //  □□
+        next_tetrimino_positions = ['1-4', '1-5', '2-5', '2-6'];
+        next_tetrimino_color = Z_TETRIMINO_COLOR;
+        break;
+      case 4:
+        // □
+        // □□□
+        next_tetrimino_positions = ['1-4', '2-4', '2-5', '2-6'];
+        next_tetrimino_color = L_TETRIMINO_COLOR;
+        break;
+      case 5:
+        //   □
+        // □□□
+        next_tetrimino_positions = ['1-6', '2-4', '2-5', '2-6'];
+        next_tetrimino_color = J_TETRIMINO_COLOR;
+        break;
+      case 6:
+        //  □
+        // □□□
+        next_tetrimino_positions = ['1-5', '2-4', '2-5', '2-6'];
+        next_tetrimino_color = T_TETRIMINO_COLOR;
+        break;
+    }
+    for (let line = 1; line <= 2; line++) {
+      for (let column = 3; column <= 8; column++) {
+        document.getElementById('next_grid' + line + '-' + column).style.backgroundColor = NEXT_AREA_BACKGROUND_COLOR;
+      }
+    }
+    next_tetrimino_positions.forEach(position => {
+      document.getElementById('next_grid' + position).style.backgroundColor = next_tetrimino_color;
+    });
+  }
+
+  // 新たにテトリミノを落とす
+  function setTetrimino() {
+    active_tetrimino_positions = next_tetrimino_positions;
+    active_tetrimino_color = next_tetrimino_color;
+    active_tetrimino_rotation_no = 0;
+
+    active_tetrimino_positions.forEach(position => {
+      document.getElementById('grid' + position).style.backgroundColor = active_tetrimino_color;
+    });
+  }
+
+  // ランダム関数
+  function getRandomInt(max) {
+    return Math.floor(Math.random() * max);
+  }
+
+  // ユーザーのキー操作でテトリミノを移動/回転させる
+  function userKey(event) {
+    switch (event.code) {
+      case 'ArrowDown':
+        moveTetrimino('down');
+        break;
+      case 'ArrowLeft':
+        moveTetrimino('left');
+        break;
+      case 'ArrowRight':
+        moveTetrimino('right');
+        break;
+      case 'KeyA':
+        rotationTetrimino('left');
+        break;
+      case 'KeyS':
+        rotationTetrimino('right');
+        break;
+    }
+  }
+
+  // スコアを加算する
+  function addSocre(line) {
+    if (line == 0) {
+      return;
+    }
+    let val = 0;
+    switch (line) {
+      case 1:
+        val = 100;
+        break;
+      case 2:
+        val = 300;
+        break;
+      case 3:
+        val = 600;
+        break;
+      case 4:
+        val = 1000;
+        break;
+    }
+    score += val;
+    document.getElementById('score').innerHTML = score;
+  }
+
+  // スピード設定
+  function setSpeed() {
+    const level = parseInt((score / 1000), 10);
+    const speed = (5 - level) * 100;
+    if (timer_msec != speed) {
+      timer_msec = speed;
+      termGame();
+      startGame();
+    }
+  }
+
+  // ゲームクリア判定
+  function isGameClear() {
+    if (score < 5000) {
+      return false;
+    }
+    return true;
+  }
+
+  // ゲームオーバー判定
+  function isGameOver() {
+    const reg = new RegExp('^' + 1 + '-([4-7])$');
+    const blocks = passive_tetrimino_positions.filter(item => item.match(reg));
+    if (blocks.length > 0) {
+      return true;
+    }
+    return false;
+  }
+
+  // テトリミノを移動させる
+  function moveTetrimino(direction) {
+    // 移動後の位置を取得する
+    moving_positions = getMovingPositions(direction, active_tetrimino_positions);
+    // 移動できるか判定する
+    if (!isFrameIn(moving_positions)) {
+      return false;
+    }
+    if (!isMove(moving_positions, passive_tetrimino_positions)) {
+      return false;
+    }
+    // 移動させる
+    active_tetrimino_positions = moving(active_tetrimino_positions, moving_positions);
+    return true;
+  }
+
+  // テトリミノを１マス指定方向に移動した後の位置を取得する
+  function getMovingPositions(direction, current_positions) {
+    let moving_positions = [];
+    let length = 0;
+    current_positions.forEach(position => {
+      const [line, column] = getLineColumnInt(position);
+      switch (direction) {
+        case 'down':
+          moving_positions[length] = (line + 1) + '-' + column;
+          break;
+        case 'left':
+          moving_positions[length] = line + '-' + (column - 1);
+          break;
+        case 'right':
+          moving_positions[length] = line + '-' + (column + 1);
+          break;
+      }
+      length++;
+    });
+    return moving_positions;
+  }
+
+  // テトリミノを回転させる
+  function rotationTetrimino(direction) {
+    // 回転後の位置を取得する
+    moving_positions = getRotationPositions(active_tetrimino_color, active_tetrimino_rotation_no, direction, active_tetrimino_positions);
+    // 回転できるか判定する
+    if (!isFrameIn(moving_positions)) {
+      return false;
+    }
+    if (!isMove(moving_positions, passive_tetrimino_positions)) {
+      return false;
+    }
+    // 回転させる
+    active_tetrimino_positions = moving(active_tetrimino_positions, moving_positions);
+    // 回転向きを更新する
+    switch (direction) {
+      case 'right':
+        if (active_tetrimino_rotation_no < 3) {
+          active_tetrimino_rotation_no++;
+        } else {
+          active_tetrimino_rotation_no = 0;
+        }
+        break;
+      case 'left':
+        if (active_tetrimino_rotation_no > 0) {
+          active_tetrimino_rotation_no--;
+        } else {
+          active_tetrimino_rotation_no = 3;
+        }
+        break;
+    }
+    return true;
+  }
+
+  // 回転した後の位置を取得する
+  function getRotationPositions(color, rotation_no, direction, current_positions) {
+    let [line, column] = getLineColumnInt(current_positions[0]);
+    let squares;
+    let moving_positions = [];
+    // 回転させるため基準座標（回転軸ではない）を求める
+    // e.g. (凡例)〇:ブロック,␣:空白
+    // ␣〇〇
+    // 〇〇␣
+    // ␣␣␣
+    // 左上の座標を基準座標とし、右または左回転後の座標を求める
+    switch (color) {
+      case I_TETRIMINO_COLOR:
+        squares = 4;
+        switch (rotation_no) {
+          case 0:
+            line = line - 1;
+            break;
+          case 1:
+            column = column - 2;
+            break;
+          case 2:
+            line = line - 2;
+            column = column - 3;
+            break;
+          case 3:
+            line = line - 3;
+            column = column - 1;
+            break;
+        }
+        break;
+      case O_TETRIMINO_COLOR:
+        // 回転しても変わらない
+        return current_positions;
+      case S_TETRIMINO_COLOR:
+        squares = 3;
+        switch (rotation_no) {
+          case 0:
+            column = column - 1;
+            break;
+          case 1:
+            line = line - 1;
+            column = column - 2;
+            break;
+          case 2:
+            line = line - 2;
+            column = column - 1;
+            break;
+          case 3:
+            line = line - 1;
+            break;
+        }
+        break;
+      case Z_TETRIMINO_COLOR:
+      case L_TETRIMINO_COLOR:
+        squares = 3;
+        switch (rotation_no) {
+          case 0:
+            break;
+          case 1:
+            column = column - 2;
+            break;
+          case 2:
+            line = line - 2;
+            column = column - 2;
+            break;
+          case 3:
+            line = line - 2;
+            break;
+        }
+        break;
+      case J_TETRIMINO_COLOR:
+        squares = 3;
+        switch (rotation_no) {
+          case 0:
+            column = column - 2;
+            break;
+          case 1:
+            line = line - 2;
+            column = column - 2;
+            break;
+          case 2:
+            line = line - 2;
+            break;
+          case 3:
+            break;
+        }
+        break;
+      case T_TETRIMINO_COLOR:
+        squares = 3;
+        switch (rotation_no) {
+          case 0:
+            column = column - 1;
+            break;
+          case 1:
+            line = line - 1;
+            column = column - 2;
+            break;
+          case 2:
+            line = line - 2;
+            column = column - 1;
+            break;
+          case 3:
+            line = line - 1;
+            break;
+        }
+        break;
+    }
+
+    // 回転後の座標を計算する
+    switch (direction) {
+      case 'right':
+        moving_positions = Rotate90Right(line, column, squares, current_positions);
+        break;
+      case 'left':
+        moving_positions = Rotate90LLeft(line, column, squares, current_positions);
+        break;
+    }
+
+    return moving_positions;
+  }
+
+  // 右に90°回転させる
+  function Rotate90Right(base_line, base_column, squares, current_positions) {
+    let moving_positions = [];
+    let length = 0;
+    for (let index = 0; index < current_positions.length; index++) {
+      const [line, column] = getLineColumnInt(current_positions[index]);
+      moving_positions[length] = (base_line + (column - base_column)) + '-' + (base_column + (squares - 1) - (line - base_line));
+      length++;
+    }
+    return moving_positions;
+  }
+
+  // 左に90°回転させる
+  function Rotate90LLeft(base_line, base_column, squares, current_positions) {
+    let moving_positions = [];
+    let length = 0;
+    for (let index = 0; index < current_positions.length; index++) {
+      const [line, column] = getLineColumnInt(current_positions[index]);
+      moving_positions[length] = (base_line + ((squares - 1) - (column - base_column))) + '-' + (base_column + (line - base_line));
+      length++;
+    }
+    return moving_positions;
+  }
+
+  // フレームイン判定
+  function isFrameIn(positions) {
+    for (let index = 0; index < positions.length; index++) {
+      const [line, column] = getLineColumnInt(positions[index]);
+      if (line == 0) {
+        return false;
+      }
+      if (line > MAX_LINE) {
+        return false;
+      }
+      if (column == 0) {
+        return false;
+      }
+      if (column > MAX_COLUMN) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  // 移動判定
+  function isMove(moving_positions, moved_positions) {
+    // 移動先の位置と、既にあるブロック位置とで、重複しているかで判定する
+    return [...moving_positions, ...moved_positions].filter(item => moving_positions.includes(item) && moved_positions.includes(item)).length <= 0;
+  }
+
+  // 移動させる
+  function moving(before_positions, after_positions) {
+    // 先に、移動前を黒して、
+    before_positions.forEach(position => {
+      const [line, column] = getLineColumnInt(position);
+      if (line > 0) {
+        document.getElementById('grid' + position).style.backgroundColor = NONE_COLOR;
+      }
+    });
+    // 移動後にコピーする
+    after_positions.forEach(position => {
+      document.getElementById('grid' + position).style.backgroundColor = active_tetrimino_color;
+    });
+    return after_positions;
+  }
+
+  // １行揃っていれば削除＆シフト
+  function checkTetris() {
+    let complete_line = 0;
+    // 下段側から削除していく
+    for (let line = MAX_LINE; line > 0; line--) {
+      const reg = new RegExp('^' + line + '-([1-9]|10)$');
+      const passive_columns = passive_tetrimino_positions.filter(item => item.match(reg));
+      // 1行揃っていれば、
+      if (passive_columns.length == MAX_COLUMN) {
+        // その行を削除する
+        deleteLine(line);
+        if (line > 1 || passive_tetrimino_positions.length > 0) {
+          // 削除した行の上の行を対象に、
+          for (let shiftLine = line; shiftLine > 1; shiftLine--) {
+            // １行下げる
+            downLine(shiftLine)
+          }
+          // 下げた行を再評価する
+          line++;
+        }
+        complete_line++;
+      }
+    }
+    return complete_line;
+  }
+
+  // 指定された行を削除する
+  function deleteLine(delete_line) {
+    for (let column = 1; column <= MAX_COLUMN; column++) {
+      document.getElementById('grid' + delete_line + '-' + column).style.backgroundColor = NONE_COLOR;
+    }
+    const reg = new RegExp('^' + delete_line + '-([1-9]|10)$');
+    passive_tetrimino_positions = passive_tetrimino_positions.filter(item => !item.match(reg));
+  }
+
+  // 指定された行を下げる
+  function downLine(down_line) {
+    for (let column = 1; column <= MAX_COLUMN; column++) {
+      if (document.getElementById('grid' + down_line + '-' + column).style.backgroundColor != NONE_COLOR) {
+        document.getElementById('grid' + (down_line + 1) + '-' + column).style.backgroundColor =
+          document.getElementById('grid' + down_line + '-' + column).style.backgroundColor;
+        document.getElementById('grid' + down_line + '-' + column).style.backgroundColor = NONE_COLOR;
+      }
+    }
+    const reg = new RegExp('^' + down_line + '-');
+    for (let index = 0; index < passive_tetrimino_positions.length; index++) {
+      passive_tetrimino_positions[index] = passive_tetrimino_positions[index].replace(reg, (down_line + 1) + '-');
+    }
+  }
+
+  // 行,列を数値で取得する(e.g '11-5'を指定すると11,5を返す)
+  function getLineColumnInt(position) {
+    const line = parseInt(position.split('-')[0], 10);
+    const column = parseInt(position.split('-')[1], 10);
+    return [line, column]
+  }
+</script>
+
+</html>
